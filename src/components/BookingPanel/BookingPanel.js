@@ -71,6 +71,8 @@ const BookingPanel = props => {
     fetchLineItemsError,
   } = props;
 
+  console.log('listing', listing);
+
   const price = listing.attributes.price;
   const hasListingState = !!listing.attributes.state;
   const isClosed = hasListingState && listing.attributes.state === LISTING_STATE_CLOSED;
@@ -96,6 +98,8 @@ const BookingPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.bookingTitle);
+
+  const discount = { amount: 1000, currency: 'USD' }
 
   return (
     <div className={classes}>
@@ -134,9 +138,11 @@ const BookingPanel = props => {
             lineItems={lineItems}
             fetchLineItemsInProgress={fetchLineItemsInProgress}
             fetchLineItemsError={fetchLineItemsError}
+            discount={discount}
           />
         ) : null}
       </ModalInMobile>
+
       <div className={css.openBookingForm}>
         <div className={css.priceContainer}>
           <div className={css.priceValue} title={priceTitle}>

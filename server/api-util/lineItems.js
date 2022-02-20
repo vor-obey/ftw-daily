@@ -27,9 +27,22 @@ const PROVIDER_COMMISSION_PERCENTAGE = -10;
  * @param {Object} bookingData
  * @returns {Array} lineItems
  */
+
+
+const resolveDiscountPrice = listing => {
+  const discount = {amount: 1000, currency: 'USD'};
+  const { amount, currency } = discount;
+
+  if (amount && currency) {
+    return new Money(amount, currency);
+  }
+
+  return null;
+};
+
 exports.transactionLineItems = (listing, bookingData) => {
   const unitPrice = listing.attributes.price;
-  const { startDate, endDate } = bookingData;
+  const { startDate, endDate, hasDiscount } = bookingData;
 
   /**
    * If you want to use pre-defined component and translations for printing the lineItems base price for booking,
@@ -48,14 +61,26 @@ exports.transactionLineItems = (listing, bookingData) => {
     includeFor: ['customer', 'provider'],
   };
 
+  const discountPrice = hasDiscount ? resolveDiscountPrice(listing) : null;
+  const discount = discountPrice
+      ? [
+          {
+            code: 'line-item/discount',
+            unitPrice: discountPrice,
+            quantity: 1,
+            includeFor: ['customer', 'provider'],
+          },
+        ]
+     : [];
+
   const providerCommission = {
     code: 'line-item/provider-commission',
-    unitPrice: calculateTotalFromLineItems([booking]),
+    unitPrice: calculateTotalFromLineItems([booking, ...discount]),
     percentage: PROVIDER_COMMISSION_PERCENTAGE,
     includeFor: ['provider'],
   };
 
-  const lineItems = [booking, providerCommission];
+  const lineItems = [booking, ...discount, providerCommission];
 
   return lineItems;
 };

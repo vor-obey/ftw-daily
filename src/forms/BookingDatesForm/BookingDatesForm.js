@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { string, bool, arrayOf, array, func } from 'prop-types';
+import { formatMoney } from '../../util/currency';
+import { types as sdkTypes } from '../../util/sdkLoader';
 import { compose } from 'redux';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import classNames from 'classnames';
@@ -9,8 +11,10 @@ import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { required, bookingDatesRequired, composeValidators } from '../../util/validators';
 import { START_DATE, END_DATE } from '../../util/dates';
 import { propTypes } from '../../util/types';
-import { Form, IconSpinner, PrimaryButton, FieldDateRangeInput } from '../../components';
+import { Form, IconSpinner, PrimaryButton, FieldDateRangeInput, FieldCheckbox } from '../../components';
 import EstimatedBreakdownMaybe from './EstimatedBreakdownMaybe';
+
+const { Money } = sdkTypes;
 
 import css from './BookingDatesForm.module.css';
 
@@ -55,12 +59,15 @@ export class BookingDatesFormComponent extends Component {
   handleOnChange(formValues) {
     const { startDate, endDate } =
       formValues.values && formValues.values.bookingDates ? formValues.values.bookingDates : {};
+
+    const hasDiscount = formValues.values.discount && formValues.values.discount.length > 0;
+
     const listingId = this.props.listingId;
     const isOwnListing = this.props.isOwnListing;
 
     if (startDate && endDate && !this.props.fetchLineItemsInProgress) {
       this.props.onFetchTransactionLineItems({
-        bookingData: { startDate, endDate },
+        bookingData: { startDate, endDate, hasDiscount },
         listingId,
         isOwnListing,
       });
@@ -111,8 +118,21 @@ export class BookingDatesFormComponent extends Component {
             lineItems,
             fetchLineItemsInProgress,
             fetchLineItemsError,
+            discount
           } = fieldRenderProps;
           const { startDate, endDate } = values && values.bookingDates ? values.bookingDates : {};
+
+          const formattedDiscount= discount
+            ? formatMoney(
+              intl,
+              new Money(discount.amount, discount.currency)
+            )
+            : null;
+
+          const discountLabel = intl.formatMessage(
+            { id: 'BookingDatesForm.discountLabel' },
+            { fee: formattedDiscount }
+          );
 
           const bookingStartLabel = intl.formatMessage({
             id: 'BookingDatesForm.bookingStartTitle',
@@ -240,6 +260,14 @@ export class BookingDatesFormComponent extends Component {
                   <FormattedMessage id="BookingDatesForm.requestToBook" />
                 </PrimaryButton>
               </div>
+
+              <FieldCheckbox
+                id="discount"
+                name="discount"
+                label={discountLabel}
+                value="discount"
+              />
+
             </Form>
           );
         }}

@@ -175,6 +175,7 @@ export const initiateOrder = (orderParams, transactionId) => (dispatch, getState
   const bookingData = {
     startDate: orderParams.bookingStart,
     endDate: orderParams.bookingEnd,
+    hasDiscount: orderParams.hasDiscount,
   };
 
   const bodyParams = isTransition

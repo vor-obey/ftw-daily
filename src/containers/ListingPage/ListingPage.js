@@ -113,6 +113,8 @@ export class ListingPageComponent extends Component {
       confirmPaymentError: null,
     };
 
+    console.log('initial', initialValues)
+
     const saveToSessionStorage = !this.props.currentUser;
 
     const routes = routeConfiguration();

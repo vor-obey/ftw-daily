@@ -69,6 +69,7 @@
   "BookingBreakdown.subTotal": "Subtotal",
   "BookingBreakdown.total": "Total price",
   "BookingDatesForm.bookingEndTitle": "End date",
+  "BookingDatesForm.discountLabel": "Discount: {fee}",
   "BookingDatesForm.bookingStartTitle": "Start date",
   "BookingDatesForm.fetchLineItemsError": "Oops, something went wrong. Please refresh the page and try again.",
   "BookingDatesForm.listingCurrencyInvalid": "Oops, the currency of the listing doesn't match the currency of the marketplace.",
